@@ -1,0 +1,54 @@
+services:
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # env_file:
+    #   - .env
+    image: django
+    container_name: django
+    ports:
+      - 8000:8000
+    volumes:
+      - ./website:/website:ro
+      - ./.env:/.env:ro
+    networks:
+      - task_net
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: >
+      sh -c "
+        python manage.py makemigrations &&
+        python manage.py migrate &&
+        python manage.py initadmin &&
+        python manage.py runserver 0.0.0.0:8000
+      "
+  postgres:
+    image: postgres:15
+    env_file:
+      - .env
+    container_name: ${PG_HOST}
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${PG_DB_NAME}
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+    networks:
+      - task_net
+    volumes:
+      - block_03_vol_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $PG_USER -d $PG_DB_NAME"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+    command: ["postgres", "-c", "jit=off"]
+
+volumes:
+  block_03_vol_pg:
+    name: block_03_vol_pg
+
+networks:
+  task_net:
+    external: true
