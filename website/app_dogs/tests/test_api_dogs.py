@@ -65,7 +65,7 @@ class DogAPITestCase(APITestCase):
         )
         cls.dog_3: Dog = Dog.objects.create(
             name="Dutty",
-            age=4,
+            age=1,
             gender="female",
             color="gray",
             favorite_food="pork",
@@ -97,6 +97,7 @@ class DogAPITestCase(APITestCase):
                 "age": 3,
                 "gender": "male",
                 "detail_url": self.url_dog_detail_1,
+                "breed_avg_age": 3,
             },
             {
                 "id": self.dog_2.id,
@@ -104,13 +105,15 @@ class DogAPITestCase(APITestCase):
                 "age": 2,
                 "gender": "female",
                 "detail_url": self.url_dog_detail_2,
+                "breed_avg_age": 1.5,
             },
             {
                 "id": self.dog_3.id,
                 "name": "Dutty",
-                "age": 4,
+                "age": 1,
                 "gender": "female",
                 "detail_url": self.url_dog_detail_3,
+                "breed_avg_age": 1.5,
             },
         ]
 
@@ -154,6 +157,7 @@ class DogAPITestCase(APITestCase):
             "favorite_food": None,
             "favorite_toy": None,
             "breed": self.breed_1.id,
+            "same_breed_count": 1,
         }
         expected_data_2 = {
             "id": self.dog_2.id,
@@ -164,16 +168,18 @@ class DogAPITestCase(APITestCase):
             "favorite_food": "beef",
             "favorite_toy": "ball",
             "breed": self.breed_2.id,
+            "same_breed_count": 2,
         }
         expected_data_3 = {
             "id": self.dog_3.id,
             "name": "Dutty",
-            "age": 4,
+            "age": 1,
             "gender": "female",
             "color": "gray",
             "favorite_food": "pork",
             "favorite_toy": "bone",
             "breed": self.breed_2.id,
+            "same_breed_count": 2,
         }
 
         response_dog_1: Response = self.client.get(self.url_dog_detail_1)

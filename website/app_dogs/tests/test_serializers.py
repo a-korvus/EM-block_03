@@ -1,10 +1,13 @@
 """Tests as serializers make transformations of model data in app_dogs."""
 
+from django.db.models import Count
+from django.db.models.query import QuerySet
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 
 from app_dogs.models import Breed, Dog
 from app_dogs.serializers import (
+    BreedDetailSerializer,
     BreedListSerializer,
     DogDetailSerializer,
     DogListSerializer,
@@ -165,8 +168,11 @@ class SerializersTestCase(TestCase):
         self.assertEqual(expected_data_dog_2, serialized_data_dog_2)
         self.assertEqual(expected_data_dog_3, serialized_data_dog_3)
 
-    def test_breed_serializer(self):
+    def test_breed_list_serializer(self):
         """Test the operation of BreedListSerializer."""
+        annotated_breeds: QuerySet = Breed.objects.all().annotate(
+            dog_count=Count("dogs"),
+        ).prefetch_related("dogs").order_by("id")
         expected_data = [
             {
                 "id": self.breed_1.id,
@@ -177,6 +183,7 @@ class SerializersTestCase(TestCase):
                 "shedding_amount": 1,
                 "exercise_needs": 3,
                 "detail_url": self.url_breed_detail_1,
+                "dog_count": 1,
             },
             {
                 "id": self.breed_2.id,
@@ -187,6 +194,7 @@ class SerializersTestCase(TestCase):
                 "shedding_amount": 2,
                 "exercise_needs": 5,
                 "detail_url": self.url_breed_detail_2,
+                "dog_count": 2,
             },
             {
                 "id": self.breed_3.id,
@@ -197,28 +205,52 @@ class SerializersTestCase(TestCase):
                 "shedding_amount": 2,
                 "exercise_needs": 2,
                 "detail_url": self.url_breed_detail_3,
+                "dog_count": 0,
             }
         ]
+
         serialized_data: dict = BreedListSerializer(
-            [self.breed_1, self.breed_2, self.breed_3],
+            annotated_breeds,
             many=True,
             context={"request": self.request},
         ).data
 
-        serialized_data_breed_1: dict = BreedListSerializer(
-            self.breed_1,
-            context={"request": self.request},
-        ).data
-        serialized_data_breed_2: dict = BreedListSerializer(
-            self.breed_2,
-            context={"request": self.request},
-        ).data
-        serialized_data_breed_3: dict = BreedListSerializer(
-            self.breed_3,
-            context={"request": self.request},
-        ).data
-
         self.assertEqual(expected_data, serialized_data)
-        self.assertEqual(expected_data[0], serialized_data_breed_1)
-        self.assertEqual(expected_data[1], serialized_data_breed_2)
-        self.assertEqual(expected_data[2], serialized_data_breed_3)
+
+    def test_breed_detail_serializer(self):
+        """Test the operation of BreedDetailSerializer."""
+        expected_data_breed_1 = {
+            "id": self.breed_1.id,
+            "name": "pitbull",
+            "size": "medium",
+            "friendliness": 5,
+            "trainability": 5,
+            "shedding_amount": 1,
+            "exercise_needs": 3,
+        }
+        expected_data_breed_2 = {
+            "id": self.breed_2.id,
+            "name": "bandog",
+            "size": "large",
+            "friendliness": 2,
+            "trainability": 3,
+            "shedding_amount": 2,
+            "exercise_needs": 5,
+        }
+        expected_data_breed_3 = {
+            "id": self.breed_3.id,
+            "name": "bull terrier",
+            "size": "small",
+            "friendliness": 5,
+            "trainability": 4,
+            "shedding_amount": 2,
+            "exercise_needs": 2,
+        }
+
+        serialized_data_breed_1 = BreedDetailSerializer(self.breed_1).data
+        serialized_data_breed_2 = BreedDetailSerializer(self.breed_2).data
+        serialized_data_breed_3 = BreedDetailSerializer(self.breed_3).data
+
+        self.assertEqual(expected_data_breed_1, serialized_data_breed_1)
+        self.assertEqual(expected_data_breed_2, serialized_data_breed_2)
+        self.assertEqual(expected_data_breed_3, serialized_data_breed_3)

@@ -19,7 +19,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.test import APITestCase
 
-from app_dogs.models import Breed
+from app_dogs.models import Breed, Dog
 
 
 class BreedAPITestCase(APITestCase):
@@ -57,29 +57,29 @@ class BreedAPITestCase(APITestCase):
             exercise_needs=2,
         )
 
-        # cls.dog_1: Dog = Dog.objects.create(
-        #     name="Axe",
-        #     age=3,
-        #     breed=cls.breed_1,
-        # )
-        # cls.dog_2: Dog = Dog.objects.create(
-        #     name="Bryee",
-        #     age=2,
-        #     gender="female",
-        #     color="black",
-        #     favorite_food="beef",
-        #     favorite_toy="ball",
-        #     breed=cls.breed_2,
-        # )
-        # cls.dog_3: Dog = Dog.objects.create(
-        #     name="Dutty",
-        #     age=4,
-        #     gender="female",
-        #     color="gray",
-        #     favorite_food="pork",
-        #     favorite_toy="bone",
-        #     breed=cls.breed_2,
-        # )
+        cls.dog_1: Dog = Dog.objects.create(
+            name="Axe",
+            age=3,
+            breed=cls.breed_1,
+        )
+        cls.dog_2: Dog = Dog.objects.create(
+            name="Bryee",
+            age=2,
+            gender="female",
+            color="black",
+            favorite_food="beef",
+            favorite_toy="ball",
+            breed=cls.breed_2,
+        )
+        cls.dog_3: Dog = Dog.objects.create(
+            name="Dutty",
+            age=4,
+            gender="female",
+            color="gray",
+            favorite_food="pork",
+            favorite_toy="bone",
+            breed=cls.breed_2,
+        )
 
         cls.url_breeds_base = reverse("app_dogs:breeds-list")
 
@@ -108,6 +108,7 @@ class BreedAPITestCase(APITestCase):
                 "shedding_amount": 1,
                 "exercise_needs": 3,
                 "detail_url": self.url_breed_detail_1,
+                "dog_count": 1,
             },
             {
                 "id": self.breed_2.id,
@@ -118,6 +119,7 @@ class BreedAPITestCase(APITestCase):
                 "shedding_amount": 2,
                 "exercise_needs": 5,
                 "detail_url": self.url_breed_detail_2,
+                "dog_count": 2,
             },
             {
                 "id": self.breed_3.id,
@@ -128,6 +130,7 @@ class BreedAPITestCase(APITestCase):
                 "shedding_amount": 2,
                 "exercise_needs": 2,
                 "detail_url": self.url_breed_detail_3,
+                "dog_count": 0,
             },
         ]
 
