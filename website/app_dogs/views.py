@@ -4,9 +4,10 @@ from rest_framework import viewsets
 
 from app_dogs.models import Breed, Dog
 from app_dogs.serializers import (
-    BreedSerializer,
-    DogListSerializer,
+    BreedDetailSerializer,
+    BreedListSerializer,
     DogDetailSerializer,
+    DogListSerializer,
 )
 
 
@@ -27,4 +28,11 @@ class BreedViewSet(viewsets.ModelViewSet):
     """DRF ViewSet for the Breed entity."""
 
     queryset = Breed.objects.all().order_by("id")
-    serializer_class = BreedSerializer
+    serializer_class = BreedListSerializer
+
+    def get_serializer_class(self):
+        """Return different serializers for list and detail actions."""
+        if self.action == "list":
+            return BreedListSerializer
+
+        return BreedDetailSerializer

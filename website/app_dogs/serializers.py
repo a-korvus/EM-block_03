@@ -26,7 +26,7 @@ class DogDetailSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class BreedSerializer(serializers.HyperlinkedModelSerializer):
+class BreedListSerializer(serializers.HyperlinkedModelSerializer):
     """Specify how you want to serialize Breed entities."""
 
     detail_url = serializers.HyperlinkedIdentityField(
@@ -37,3 +37,11 @@ class BreedSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Breed
         fields = [field.name for field in Breed._meta.fields] + ["detail_url"]
+
+
+class BreedDetailSerializer(serializers.ModelSerializer):
+    """Serializer for detailed Breed view with all fields."""
+
+    class Meta:
+        model = Breed
+        fields = "__all__"
