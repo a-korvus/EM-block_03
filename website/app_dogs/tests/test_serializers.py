@@ -5,7 +5,7 @@ from django.urls import reverse
 
 from app_dogs.models import Breed, Dog
 from app_dogs.serializers import (
-    BreedSerializer,
+    BreedListSerializer,
     DogDetailSerializer,
     DogListSerializer,
 )
@@ -166,7 +166,7 @@ class SerializersTestCase(TestCase):
         self.assertEqual(expected_data_dog_3, serialized_data_dog_3)
 
     def test_breed_serializer(self):
-        """Test the operation of BreedSerializer."""
+        """Test the operation of BreedListSerializer."""
         expected_data = [
             {
                 "id": self.breed_1.id,
@@ -199,21 +199,21 @@ class SerializersTestCase(TestCase):
                 "detail_url": self.url_breed_detail_3,
             }
         ]
-        serialized_data: dict = BreedSerializer(
+        serialized_data: dict = BreedListSerializer(
             [self.breed_1, self.breed_2, self.breed_3],
             many=True,
             context={"request": self.request},
         ).data
 
-        serialized_data_breed_1: dict = BreedSerializer(
+        serialized_data_breed_1: dict = BreedListSerializer(
             self.breed_1,
             context={"request": self.request},
         ).data
-        serialized_data_breed_2: dict = BreedSerializer(
+        serialized_data_breed_2: dict = BreedListSerializer(
             self.breed_2,
             context={"request": self.request},
         ).data
-        serialized_data_breed_3: dict = BreedSerializer(
+        serialized_data_breed_3: dict = BreedListSerializer(
             self.breed_3,
             context={"request": self.request},
         ).data
