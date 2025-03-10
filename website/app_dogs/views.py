@@ -1,6 +1,16 @@
 """API endpoints in the app_dogs."""
 
+from django.db.models import (
+    Avg,
+    Count,
+    FloatField,
+    IntegerField,
+    OuterRef,
+    Subquery,
+)
+from django.db.models.query import QuerySet
 from rest_framework import viewsets
+from rest_framework.serializers import ModelSerializer
 
 from app_dogs.models import Breed, Dog
 from app_dogs.serializers import (
@@ -16,23 +26,74 @@ class DogViewSet(viewsets.ModelViewSet):
 
     queryset = Dog.objects.all().order_by("id").select_related("breed")
 
-    def get_serializer_class(self):
+    def get_queryset(self) -> QuerySet[Dog]:
+        """
+        Return different querysets for list and detail actions.
+
+        For list action, annotate each Dog with the average age
+        of dogs of the same breed.
+        For retrieve action, annotate each Dog with the count
+        of dogs of the same breed.
+        """
+        qs = self.queryset
+
+        if self.action == "list":
+            avg_age_subquery = (
+                Dog.objects.filter(breed=OuterRef("breed_id"))
+                .values("breed")  # только значения поля breed
+                .annotate(avg_age=Avg("age"))  # av age для каждой группы breed
+                .values("avg_age")[:1]  # получить QuerySet
+            )
+            qs = qs.annotate(
+                breed_avg_age=Subquery(
+                    avg_age_subquery,
+                    output_field=FloatField(),
+                )
+            )
+        elif self.action == "retrieve":
+            count_subquery = (
+                Dog.objects.filter(breed=OuterRef("breed_id"))
+                .values("breed")
+                .annotate(breed_count=Count("id"))
+                .values("breed_count")[:1]
+            )
+            qs = qs.annotate(
+                same_breed_count=Subquery(
+                    count_subquery,
+                    output_field=IntegerField(),
+                )
+            )
+
+        return qs
+
+    def get_serializer_class(self) -> ModelSerializer:
         """Return different serializers for list and detail actions."""
         if self.action == "list":
             return DogListSerializer
-
         return DogDetailSerializer
 
 
 class BreedViewSet(viewsets.ModelViewSet):
     """DRF ViewSet for the Breed entity."""
 
-    queryset = Breed.objects.all().order_by("id")
+    queryset = Breed.objects.all().prefetch_related("dogs").order_by("id")
     serializer_class = BreedListSerializer
+
+    def get_queryset(self):
+        """
+        Return different querysets for list and detail actions.
+
+        Expend the queryset with annotated fields if you have requested
+        a list of objects from db.
+        """
+        if self.action == "list":
+            return Breed.objects.all().annotate(
+                dog_count=Count("dogs"),
+            ).prefetch_related("dogs").order_by("id")
+        return self.queryset
 
     def get_serializer_class(self):
         """Return different serializers for list and detail actions."""
         if self.action == "list":
             return BreedListSerializer
-
         return BreedDetailSerializer
