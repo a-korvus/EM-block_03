@@ -44,7 +44,6 @@ ALLOWED_HOSTS = [
 ] + getenv("DJANGO_ALLOWED_HOSTS", "").split(",")
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -100,7 +99,6 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'HOST': getenv("PG_HOST", ""),
-        # 'HOST': '192.168.1.2',
         'PORT': getenv("PG_PORT", ""),
         'NAME': getenv("PG_DB_NAME", ""),
         'USER': getenv("PG_USER", ""),
@@ -152,3 +150,9 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS':
+        'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 5,
+}
