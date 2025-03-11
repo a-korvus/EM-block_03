@@ -1,12 +1,16 @@
 """Django models representing entities in the database."""
 
-from django.db import models
-
 from app_dogs.utils.choises import GenderChioce, RatingChoice, SizeChioce
+from django.db import models
 
 
 class Dog(models.Model):
-    """Dog entity in the database."""
+    """
+    Dog entity in the database.
+
+    Args:
+        models.Model: Django ORM model class.
+    """
 
     name = models.CharField(max_length=255, null=False)
     age = models.PositiveSmallIntegerField(null=False)
@@ -21,19 +25,28 @@ class Dog(models.Model):
         max_length=6,
         choices=GenderChioce,
         default=GenderChioce.MALE,
-        help_text="Select a gender of the dog: male or female."
+        help_text="Select a gender of the dog: male or female.",
     )
     color = models.CharField(max_length=255, default="other")
     favorite_food = models.CharField(max_length=255, null=True, default=None)
     favorite_toy = models.CharField(max_length=255, null=True, default=None)
 
     def __str__(self) -> str:
-        """Set up the string representation of the Model."""
+        """
+        Set up the string representation of the Model.
+
+        Returns:
+            str: Model string representation.
+        """
         return f"<{self.id}> '{self.name}'"
 
 
 class Breed(models.Model):
-    """Breed entity in the database."""
+    """Breed entity in the database.
+
+    Args:
+        models.Model: Django ORM model class.
+    """
 
     name = models.CharField(max_length=255, null=False)
     size = models.CharField(
@@ -59,5 +72,10 @@ class Breed(models.Model):
     )
 
     def __str__(self) -> str:
-        """Set up the string representation of the Model."""
+        """
+        Set up the string representation of the Model.
+
+        Returns:
+            str: Model string representation.
+        """
         return f"<{self.id}> '{self.name}'"

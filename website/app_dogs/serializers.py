@@ -1,12 +1,17 @@
 """Serializers in the app_dogs."""
 
-from rest_framework import serializers
-
 from app_dogs.models import Breed, Dog
+from rest_framework import serializers
 
 
 class DogListSerializer(serializers.HyperlinkedModelSerializer):
-    """Serializer for listing Dogs with minimal fields."""
+    """
+    Serializer for listing Dogs with minimal fields.
+
+    Args:
+        HyperlinkedModelSerializer: DRF serializer based on django model.
+        Processed detail links.
+    """
 
     breed_avg_age = serializers.FloatField(read_only=True)
     detail_url = serializers.HyperlinkedIdentityField(
@@ -15,6 +20,12 @@ class DogListSerializer(serializers.HyperlinkedModelSerializer):
     )
 
     class Meta:
+        """
+        Serializer django Meta class.
+
+        Define a related model and serializable fields.
+        """
+
         model = Dog
         fields = (
             "id",
@@ -27,11 +38,22 @@ class DogListSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class DogDetailSerializer(serializers.ModelSerializer):
-    """Serializer for detailed Dog view with all fields."""
+    """
+    Serializer for detailed Dog view with all fields.
+
+    Args:
+        ModelSerializer: DRF serializer based on django model.
+    """
 
     same_breed_count = serializers.IntegerField(read_only=True)
 
     class Meta:
+        """
+        Serializer django Meta class.
+
+        Define a related model and serializable fields.
+        """
+
         model = Dog
         fields = (
             "id",
@@ -47,7 +69,13 @@ class DogDetailSerializer(serializers.ModelSerializer):
 
 
 class BreedListSerializer(serializers.HyperlinkedModelSerializer):
-    """Specify how you want to serialize Breed entities."""
+    """
+    Specify how you want to serialize Breed entities.
+
+    Args:
+        HyperlinkedModelSerializer: DRF serializer based on django model.
+        Processed detail links.
+    """
 
     dog_count = serializers.IntegerField(read_only=True)
     detail_url = serializers.HyperlinkedIdentityField(
@@ -56,6 +84,12 @@ class BreedListSerializer(serializers.HyperlinkedModelSerializer):
     )
 
     class Meta:
+        """
+        Serializer django Meta class.
+
+        Define a related model and serializable fields.
+        """
+
         model = Breed
         fields = [field.name for field in Breed._meta.fields] + [
             "detail_url",
@@ -64,8 +98,19 @@ class BreedListSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class BreedDetailSerializer(serializers.ModelSerializer):
-    """Serializer for detailed Breed view with all fields."""
+    """
+    Serializer for detailed Breed view with all fields.
+
+    Args:
+        ModelSerializer: DRF serializer based on django model.
+    """
 
     class Meta:
+        """
+        Serializer django Meta class.
+
+        Define a related model and serializable fields.
+        """
+
         model = Breed
         fields = "__all__"

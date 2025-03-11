@@ -1,10 +1,5 @@
 """Tests as serializers make transformations of model data in app_dogs."""
 
-from django.db.models import Count
-from django.db.models.query import QuerySet
-from django.test import RequestFactory, TestCase
-from django.urls import reverse
-
 from app_dogs.models import Breed, Dog
 from app_dogs.serializers import (
     BreedDetailSerializer,
@@ -12,13 +7,23 @@ from app_dogs.serializers import (
     DogDetailSerializer,
     DogListSerializer,
 )
+from django.db.models import Count
+from django.db.models.query import QuerySet
+from django.test import RequestFactory, TestCase
+from django.urls import reverse
 
 
 class SerializersTestCase(TestCase):
-    """Main check of all serializers."""
+    """
+    Main check of all serializers.
 
-    def setUp(self):
-        """Run this method before each test function in this class.
+    Args:
+        TestCase: Main django test class.
+    """
+
+    def setUp(self) -> None:
+        """
+        Run this method before each test function in this class.
 
         Create some test data.
         """
@@ -94,7 +99,7 @@ class SerializersTestCase(TestCase):
             reverse(dog_detail_viewname, args=(self.dog_3.id,))
         )
 
-    def test_dog_list_serializer(self):
+    def test_dog_list_serializer(self) -> None:
         """Test the operation of DogListSerializer."""
         expected_data = [
             {
@@ -127,7 +132,7 @@ class SerializersTestCase(TestCase):
 
         self.assertEqual(expected_data, serialized_data)
 
-    def test_dog_detail_serializer(self):
+    def test_dog_detail_serializer(self) -> None:
         """Test the operation of DogDetailSerializer."""
         expected_data_dog_1 = {
             "id": self.dog_1.id,
@@ -168,11 +173,16 @@ class SerializersTestCase(TestCase):
         self.assertEqual(expected_data_dog_2, serialized_data_dog_2)
         self.assertEqual(expected_data_dog_3, serialized_data_dog_3)
 
-    def test_breed_list_serializer(self):
+    def test_breed_list_serializer(self) -> None:
         """Test the operation of BreedListSerializer."""
-        annotated_breeds: QuerySet = Breed.objects.all().annotate(
-            dog_count=Count("dogs"),
-        ).prefetch_related("dogs").order_by("id")
+        annotated_breeds: QuerySet = (
+            Breed.objects.all()
+            .annotate(
+                dog_count=Count("dogs"),
+            )
+            .prefetch_related("dogs")
+            .order_by("id")
+        )
         expected_data = [
             {
                 "id": self.breed_1.id,
@@ -206,7 +216,7 @@ class SerializersTestCase(TestCase):
                 "exercise_needs": 2,
                 "detail_url": self.url_breed_detail_3,
                 "dog_count": 0,
-            }
+            },
         ]
 
         serialized_data: dict = BreedListSerializer(
@@ -217,7 +227,7 @@ class SerializersTestCase(TestCase):
 
         self.assertEqual(expected_data, serialized_data)
 
-    def test_breed_detail_serializer(self):
+    def test_breed_detail_serializer(self) -> None:
         """Test the operation of BreedDetailSerializer."""
         expected_data_breed_1 = {
             "id": self.breed_1.id,

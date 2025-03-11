@@ -12,18 +12,21 @@ A one of the breeds:
 
 import json
 
+from app_dogs.models import Breed, Dog
 from django.db.models.query import QuerySet
 from django.urls import reverse
-
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.test import APITestCase
 
-from app_dogs.models import Breed, Dog
-
 
 class BreedAPITestCase(APITestCase):
-    """Tests Breed API."""
+    """
+    Tests Breed API.
+
+    Args:
+        APITestCase: DRF test class based on django TestCase.
+    """
 
     @classmethod
     def setUpTestData(cls) -> None:
@@ -96,7 +99,7 @@ class BreedAPITestCase(APITestCase):
             args=(cls.breed_3.id,),
         )
 
-    def test_get_all(self):
+    def test_get_all(self) -> None:
         """Check how you get list of the breeds."""
         expected_data = [
             {
@@ -139,7 +142,7 @@ class BreedAPITestCase(APITestCase):
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(expected_data, response.data["results"])
 
-    def test_post_create(self):
+    def test_post_create(self) -> None:
         """Check how you can create a new Breed entity."""
         new_breed_data = {
             "name": "dobermann",
@@ -165,7 +168,7 @@ class BreedAPITestCase(APITestCase):
         self.assertEqual(new_breed_data["name"], new_breed.name)
         self.assertEqual(3, new_breed.exercise_needs)
 
-    def test_get_one(self):
+    def test_get_one(self) -> None:
         """Check how you get the breed by ID."""
         expected_data_1 = {
             "id": self.breed_1.id,
@@ -207,7 +210,7 @@ class BreedAPITestCase(APITestCase):
         self.assertEqual(expected_data_2, response_breed_2.data)
         self.assertEqual(expected_data_3, response_breed_3.data)
 
-    def test_put_one(self):
+    def test_put_one(self) -> None:
         """Check how you can update the existing Breed instance."""
         updated_data = {
             "id": self.breed_2.id,
@@ -248,7 +251,7 @@ class BreedAPITestCase(APITestCase):
             breed_after_update.shedding_amount,
         )
 
-    def test_delete_one(self):
+    def test_delete_one(self) -> None:
         """Check how you can drop the Breed instance."""
         breeds_before_deleting: QuerySet = Breed.objects.all().count()
         response: Response = self.client.delete(self.url_breed_detail_3)

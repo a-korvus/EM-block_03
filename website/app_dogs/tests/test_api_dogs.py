@@ -12,18 +12,21 @@ A one of the dogs:
 
 import json
 
+from app_dogs.models import Breed, Dog
 from django.db.models.query import QuerySet
 from django.urls import reverse
-
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.test import APITestCase
 
-from app_dogs.models import Breed, Dog
-
 
 class DogAPITestCase(APITestCase):
-    """Tests Dog API."""
+    """
+    Tests Dog API.
+
+    Args:
+        APITestCase: DRF test class based on django TestCase.
+    """
 
     @classmethod
     def setUpTestData(cls) -> None:
@@ -88,7 +91,7 @@ class DogAPITestCase(APITestCase):
             args=(cls.dog_3.id,),
         )
 
-    def test_get_all(self):
+    def test_get_all(self) -> None:
         """Check how you get list of the dogs."""
         expected_data = [
             {
@@ -122,7 +125,7 @@ class DogAPITestCase(APITestCase):
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(expected_data, response.data["results"])
 
-    def test_post_create(self):
+    def test_post_create(self) -> None:
         """Check how you can create a new Dog entity."""
         new_dog_data = {
             "name": "Lucia",
@@ -146,7 +149,7 @@ class DogAPITestCase(APITestCase):
         self.assertEqual(new_dog_data["name"], new_dog.name)
         self.assertEqual("other", new_dog.color)
 
-    def test_get_one(self):
+    def test_get_one(self) -> None:
         """Check how you get the dog by ID."""
         expected_data_1 = {
             "id": self.dog_1.id,
@@ -194,7 +197,7 @@ class DogAPITestCase(APITestCase):
         self.assertEqual(expected_data_2, response_dog_2.data)
         self.assertEqual(expected_data_3, response_dog_3.data)
 
-    def test_put_one(self):
+    def test_put_one(self) -> None:
         """Check how you can update the existing Dog instance."""
         updated_data = {
             "id": self.dog_2.id,
@@ -221,7 +224,7 @@ class DogAPITestCase(APITestCase):
         self.assertEqual(updated_data["age"], dog_after_update.age)
         self.assertEqual(updated_data["color"], dog_after_update.color)
 
-    def test_delete_one(self):
+    def test_delete_one(self) -> None:
         """Check how you can drop the Dog instance."""
         dogs_before_deleting: QuerySet = Dog.objects.all().count()
         response: Response = self.client.delete(self.url_dog_detail_1)
