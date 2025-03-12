@@ -2,17 +2,21 @@
 
 import os
 
-from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
-from django.contrib.auth. models import User
+from django.contrib.auth.models import User
+from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    """Command realization."""
+    """Command realization.
+
+    Args:
+        BaseCommand: Django BaseCommand class.
+    """
 
     help = "Create a superuser non-interactively if it doesn't exist."
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options) -> None:
         """Run it as management command."""
         user: User = get_user_model()
 
